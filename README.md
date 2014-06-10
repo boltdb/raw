@@ -1,4 +1,4 @@
-raw
+raw [![Build Status](https://drone.io/github.com/boltdb/raw/status.png)](https://drone.io/github.com/boltdb/raw/latest) [![Coverage Status](https://img.shields.io/coveralls/boltdb/raw.svg)](https://coveralls.io/r/boltdb/raw?branch=master) [![GoDoc](https://godoc.org/github.com/boltdb/raw?status.png)](https://godoc.org/github.com/boltdb/raw) ![Project status](http://img.shields.io/status/experimental.png?color=red)
 ===
 
 This is simple library for working with raw Go struct data. Most of the time
