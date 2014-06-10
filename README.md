@@ -68,8 +68,9 @@ us to only deserialize the fields we need.
 ## Performance
 
 To get an idea of the performance of this approach, please see the benchmarks
-inside the test suite. On my Intel Core i7 2.9GHz Macbook Pro, I see the
-following stats:
+inside the test suite.
+
+On my Intel Core i7 2.9GHz Macbook Pro, I see the following stats:
 
 ```sh
 $ go test -bench=. -benchmem
