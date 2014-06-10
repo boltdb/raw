@@ -58,7 +58,7 @@ type O struct {
 // Encode encodes an Event into a byte slice that can be read by a RawEvent.
 func (o *O) Encode() []byte {
 	var r R
-	b := make([]byte, unsafe.Sizeof(r))
+	b := make([]byte, unsafe.Sizeof(r), int(unsafe.Sizeof(r))+len(o.MyString1)+len(o.MyString2))
 	r.MyString1.Encode(o.MyString1, &b)
 	r.MyInt = int64(o.MyInt)
 	r.MyString2.Encode(o.MyString2, &b)

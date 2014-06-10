@@ -74,9 +74,9 @@ following stats:
 ```sh
 $ go test -bench=. -benchmem
 PASS
-BenchmarkString_Encode	 5000000	       321 ns/op	     144 B/op	       4 allocs/op
-BenchmarkString_Decode	500000000	         3.70 ns/op	       0 B/op	       0 allocs/op
-ok  	github.com/boltdb/raw	4.150s
+BenchmarkString_Encode	10000000	       214 ns/op	      64 B/op	       3 allocs/op
+BenchmarkString_Decode	500000000	         3.77 ns/op	       0 B/op	       0 allocs/op
+ok  	github.com/boltdb/raw	4.635s
 ```
 
 YMMV.
