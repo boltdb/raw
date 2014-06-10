@@ -26,7 +26,7 @@ func TestString_Encode(t *testing.T) {
 	}
 }
 
-func BenchmarkString_Encode(b *testing.B) {
+func BenchmarkStringEncode(b *testing.B) {
 	o := &O{MyString1: "foo", MyInt: 1000, MyString2: "bar"}
 	for i := 0; i < b.N; i++ {
 		v := o.Encode()
@@ -36,7 +36,7 @@ func BenchmarkString_Encode(b *testing.B) {
 	}
 }
 
-func BenchmarkString_Decode(b *testing.B) {
+func BenchmarkStringDecode(b *testing.B) {
 	o := &O{MyString1: "foo", MyInt: 1000, MyString2: "bar"}
 	v := o.Encode()
 
