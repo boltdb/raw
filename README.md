@@ -12,9 +12,9 @@ memory all has overhead so when you need to go really fast, sometimes you need
 to skip serialization all together.
 
 
-### Usage
+## Usage
 
-#### Basics
+### Basics
 
 Go provides the ability to perform type conversion on byte slices to convert
 them into pointers of Go types. You can do this using the `unsafe` package.
@@ -35,7 +35,7 @@ fmt.Printf("%x\n", b)
 This will print out the value: `e8030000` which is the hex representation of `1000`.
 
 
-#### Using Raw
+### Using Raw
 
 The primitive integer and float types in Go map directly to byte slices. However,
 the string type does not. Its internal representation is publicly accessible
@@ -65,7 +65,7 @@ However, it's fast and when multiple strings are combined in a struct it allows
 us to only deserialize the fields we need.
 
 
-### Performance
+## Performance
 
 To get an idea of the performance of this approach, please see the benchmarks
 inside the test suite.
