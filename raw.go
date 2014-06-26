@@ -29,3 +29,6 @@ func (s *String) Bytes(value []byte) []byte {
 func (s *String) String(value []byte) string {
 	return string(s.Bytes(value))
 }
+
+// Time is a marker type for time.Time.
+type Time int64
