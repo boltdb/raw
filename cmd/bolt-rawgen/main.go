@@ -113,6 +113,8 @@ func process(path string) error {
 	// Rewrite original file.
 	ioutil.WriteFile(path, g.w.Bytes(), 0600)
 
+	log.Println("OK", path)
+
 	return nil
 }
 
@@ -178,8 +180,6 @@ func (g *generator) visitTypeSpec(node *ast.TypeSpec) error {
 		return fmt.Errorf("generate accessor funcs: %s", s)
 	}
 	fmt.Fprint(&g.w, "//raw:codegen:end\n\n")
-
-	fmt.Println(g.w.String())
 
 	return nil
 }
@@ -276,7 +276,7 @@ func writeAccessorFuncs(name string, node *ast.StructType, w io.Writer) error {
 				fmt.Fprintf(w, "func (r *%s) %s() time.Time { return time.Unix(0, int64(r.%s)).UTC() }\n\n", name, tocamelcase(n.Name), n.Name)
 			case "raw.String":
 				fmt.Fprintf(w, "func (r *%s) %s() string { return r.%s.String(((*[0xFFFF]byte)(unsafe.Pointer(r)))[:]) }\n", name, tocamelcase(n.Name), n.Name)
-				fmt.Fprintf(w, "func (r *%s) %s() []byte { return r.%s.Bytes(((*[0xFFFF]byte)(unsafe.Pointer(r)))[:]) }\n\n", name, tocamelcase(n.Name), n.Name)
+				fmt.Fprintf(w, "func (r *%s) %sBytes() []byte { return r.%s.Bytes(((*[0xFFFF]byte)(unsafe.Pointer(r)))[:]) }\n\n", name, tocamelcase(n.Name), n.Name)
 			default:
 				return fmt.Errorf("invalid raw type: %s", tostr(f.Type))
 			}
