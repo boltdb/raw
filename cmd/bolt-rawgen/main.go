@@ -195,6 +195,8 @@ func writeExportedType(name string, node *ast.StructType, w io.Writer) error {
 	for _, f := range node.Fields.List {
 		var typ string
 		switch tostr(f.Type) {
+		case "bool":
+			typ = "bool"
 		case "int8", "int16", "int32", "int64":
 			typ = "int"
 		case "uint8", "uint16", "uint32", "uint64":
@@ -230,6 +232,8 @@ func writeEncodeFunc(unexp, exp string, node *ast.StructType, w io.Writer) error
 		typ := tostr(f.Type)
 		for _, n := range f.Names {
 			switch typ {
+			case "bool":
+				fmt.Fprintf(w, "\tr.%s = o.%s\n", n.Name, tocamelcase(n.Name))
 			case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64":
 				fmt.Fprintf(w, "\tr.%s = %s(o.%s)\n", n.Name, typ, tocamelcase(n.Name))
 				typ = "uint"
@@ -270,6 +274,8 @@ func writeAccessorFuncs(name string, node *ast.StructType, w io.Writer) error {
 		typ := tostr(f.Type)
 		for _, n := range f.Names {
 			switch typ {
+			case "bool":
+				fmt.Fprintf(w, "func (r *%s) %s() bool { return r.%s }\n\n", name, tocamelcase(n.Name), n.Name)
 			case "int8", "int16", "int32", "int64":
 				fmt.Fprintf(w, "func (r *%s) %s() int { return int(r.%s) }\n\n", name, tocamelcase(n.Name), n.Name)
 			case "uint8", "uint16", "uint32", "uint64":
@@ -293,6 +299,7 @@ func writeAccessorFuncs(name string, node *ast.StructType, w io.Writer) error {
 func isRawStructType(node *ast.StructType) bool {
 	for _, f := range node.Fields.List {
 		switch tostr(f.Type) {
+		case "bool":
 		case "int8", "int16", "int32", "int64":
 		case "uint8", "uint16", "uint32", "uint64":
 		case "float32", "float64":
