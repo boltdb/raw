@@ -207,6 +207,8 @@ func writeExportedType(name string, node *ast.StructType, w io.Writer) error {
 			typ = "float64"
 		case "raw.Time":
 			typ = "time.Time"
+		case "raw.Duration":
+			typ = "time.Duration"
 		case "raw.String":
 			typ = "string"
 		default:
@@ -239,6 +241,8 @@ func writeEncodeFunc(unexp, exp string, node *ast.StructType, w io.Writer) error
 				typ = "uint"
 			case "raw.Time":
 				fmt.Fprintf(w, "\tr.%s = raw.Time(o.%s.UnixNano())\n", n.Name, tocamelcase(n.Name))
+			case "raw.Duration":
+				fmt.Fprintf(w, "\tr.%s = raw.Duration(o.%s)\n", n.Name, tocamelcase(n.Name))
 			case "raw.String":
 				fmt.Fprintf(w, "\tr.%s.Encode(o.%s, &b)\n", n.Name, tocamelcase(n.Name))
 			default:
@@ -284,6 +288,8 @@ func writeAccessorFuncs(name string, node *ast.StructType, w io.Writer) error {
 				fmt.Fprintf(w, "func (r *%s) %s() %s { return r.%s }\n\n", name, tocamelcase(n.Name), typ, n.Name)
 			case "raw.Time":
 				fmt.Fprintf(w, "func (r *%s) %s() time.Time { return time.Unix(0, int64(r.%s)).UTC() }\n\n", name, tocamelcase(n.Name), n.Name)
+			case "raw.Duration":
+				fmt.Fprintf(w, "func (r *%s) %s() time.Duration { return time.Duration(r.%s) }\n\n", name, tocamelcase(n.Name), n.Name)
 			case "raw.String":
 				fmt.Fprintf(w, "func (r *%s) %s() string { return r.%s.String(((*[0xFFFF]byte)(unsafe.Pointer(r)))[:]) }\n", name, tocamelcase(n.Name), n.Name)
 				fmt.Fprintf(w, "func (r *%s) %sBytes() []byte { return r.%s.Bytes(((*[0xFFFF]byte)(unsafe.Pointer(r)))[:]) }\n\n", name, tocamelcase(n.Name), n.Name)
@@ -303,7 +309,7 @@ func isRawStructType(node *ast.StructType) bool {
 		case "int8", "int16", "int32", "int64":
 		case "uint8", "uint16", "uint32", "uint64":
 		case "float32", "float64":
-		case "raw.Time":
+		case "raw.Time", "raw.Duration":
 		case "raw.String":
 		default:
 			return false

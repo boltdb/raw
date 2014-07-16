@@ -32,3 +32,6 @@ func (s *String) String(value []byte) string {
 
 // Time is a marker type for time.Time.
 type Time int64
+
+// Duration is a marker type for time.Duration.
+type Duration int64
