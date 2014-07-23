@@ -38,7 +38,7 @@ This will print out the value: `e8030000` which is the hex representation of `10
 ### Using Raw
 
 The primitive integer and float types in Go map directly to byte slices. However,
-the string type does not. Its internal representation is publicly accessible
+the string type does not. Its internal representation is not publicly accessible
 or guaranteed not to change between Go versions. So to map variable length
 Go strings to byte slices in our code we can use the `raw.String` type:
 
