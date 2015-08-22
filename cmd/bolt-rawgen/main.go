@@ -12,7 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
+	"sort"
 	"unicode"
 )
 
@@ -42,11 +42,22 @@ func walk(path string, info os.FileInfo, err error) error {
 
 	if info == nil {
 		return fmt.Errorf("file not found: %s", err)
-	} else if info.IsDir() {
+	}
+
+	if info.IsDir() {
 		traceln("skipping: is directory")
 		return nil
-	} else if filepath.Ext(path) != ".go" {
+	}
+
+	const ext = ".go"
+	const genExt = ".gen.go"
+	if filepath.Ext(path) != ext {
 		traceln("skipping: is not a go file")
+		return nil
+	}
+
+	if len(path) >= len(genExt) && path[len(path)-len(genExt):] == genExt {
+		traceln("skipping: is a generated go file")
 		return nil
 	}
 
@@ -58,8 +69,11 @@ func walk(path string, info os.FileInfo, err error) error {
 		return nil
 	}
 
+	// Get the generated file name.
+	gen := path[:len(path)-len(ext)] + genExt
+
 	// Process each file.
-	if err := process(path); err != nil {
+	if err := process(path, gen); err != nil {
 		return err
 	}
 
@@ -83,7 +97,7 @@ func importsRaw(path string) (bool, error) {
 
 // process parses and rewrites a file by generating the appropriate exported
 // types for raw types.
-func process(path string) error {
+func process(path, outputFileName string) error {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -105,8 +119,8 @@ func process(path string) error {
 		return g.err
 	}
 
-	// Write the generated contents to <path>.gen.go
-	ioutil.WriteFile(strings.Replace(path, ".go", ".gen.go", 1), g.w.Bytes(), 0600)
+	// Write the generated contents to outputFileName
+	ioutil.WriteFile(outputFileName, g.w.Bytes(), 0600)
 
 	log.Println("OK", path)
 
@@ -189,25 +203,25 @@ func (g *generator) visitTypeSpec(node *ast.TypeSpec) error {
 // writeImportedPackages writes a generated list of imports for the new file.
 // This should be kept in sync with any packages that other write funcs utilize.
 func writeImportedPackages(node *ast.StructType, w io.Writer) bool {
-	imported := make(map[string]string)
-
-	// Unsafe is universally required.
-	imported["unsafe"] = "unsafe"
+	// All code currently requires "unsafe"
+	var imported = []string{"unsafe"}
 
 	for _, f := range node.Fields.List {
 		switch tostr(f.Type) {
 		case "bool", "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64", "raw.String":
 		case "raw.Time", "raw.Duration":
-			imported["raw"] = "github.com/boltdb/raw"
-			imported["time"] = "time"
+			imported = append(imported, []string{"github.com/boltdb/raw", "time"}...)
 		default:
 			return false
 		}
 	}
 
+	sort.Strings(imported)
 	fmt.Fprintln(w, "import (")
-	for _, pkg := range imported {
-		fmt.Fprintf(w, "\t\"%s\"\n", pkg)
+	for i, pkg := range imported {
+		if i == 0 || i > 0 && pkg != imported[i-1] {
+			fmt.Fprintf(w, "\t\"%s\"\n", pkg)
+		}
 	}
 	fmt.Fprintf(w, ")\n\n")
 
